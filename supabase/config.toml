@@ -1,0 +1,16 @@
+project_id = "YOUR_SUPABASE_PROJECT_REF"
+
+[functions.approve-member]
+verify_jwt = true
+[functions.reject-application]
+verify_jwt = true
+[functions.activate-member]
+verify_jwt = false
+[functions.get-id-document-url]
+verify_jwt = true
+[functions.update-member]
+verify_jwt = true
+[functions.set-member-status]
+verify_jwt = true
+[functions.regenerate-activation]
+verify_jwt = true
