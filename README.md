@@ -1,24 +1,24 @@
-# The Palm Foundation Kenya — Website
+# The Palm Foundation Kenya — Website and Member Portal
 
-Responsive static multi-page website built with HTML, CSS and vanilla JavaScript.
+Responsive static multi-page website with a Supabase-backed membership portal and administrator dashboard.
 
-## Pages
+## Public pages
 - `index.html` — Home
 - `about.html` — About and founder story
-- `programs.html` — Proposed programme areas
-- `get-involved.html` — Volunteer, partnership and support information
+- `programs.html` — Programme areas
+- `get-involved.html` — Volunteer and partnership information
 - `contact.html` — Contact details
+- `news.html` — Published foundation news
 - `privacy-policy.html` — Draft privacy information
 
-## Preview
-Open `index.html` in a browser, or publish the repository with GitHub Pages.
+## Member and admin portals
+- `member/register.html` — Submit a membership application
+- `member/login.html` — Member login and first-time activation
+- `member/dashboard.html` — Member area
+- `admin/login.html` — Restricted administrator sign-in
+- `admin/dashboard.html` — Administration dashboard
 
-## Before launch
-1. Confirm the foundation's official registered name and registration status.
-2. Confirm official email, location/address, leadership and approved programme descriptions.
-3. Replace the sample community photographs with images you have permission to use.
-4. Replace `YOUR-DOMAIN` in `robots.txt` and `sitemap.xml` with the final domain.
-5. Review the privacy policy and add an approved policy if the site collects personal information.
-6. Only add donation/payment services after legal and banking arrangements are confirmed.
+## Setup
+Follow `README-MEMBERSHIP-SETUP.md` to configure Supabase, run the SQL schema, create the first admin, deploy Edge Functions and test the portal. The site is not production-connected until these steps are completed.
 
-The website intentionally does not claim registration, tax-exempt status, delivered programme results or donation-processing capability.
+Before launch, confirm the foundation's official details, replace permitted sample imagery, configure the final domain, and obtain approval for the privacy policy and personal-data handling process.
