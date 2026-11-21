@@ -1,1 +1,2 @@
-gg
+import {adminContext,reply,cors} from '../_shared/http.ts';
+Deno.serve(async req=>{if(req.method==='OPTIONS')return new Response('ok',{headers:cors});try{const {db,user}=await adminContext(req);const {member_id,full_name,phone}=await req.json();if(!member_id||!full_name?.trim()||!phone?.trim())throw new Error('Member, full name and phone are required.');const {error}=await db.from('members').update({full_name:full_name.trim(),phone:phone.trim(),updated_by:user.id}).eq('id',member_id);if(error)throw error;await db.from('admin_activity_log').insert({admin_id:user.id,action:'member_updated',details:{member_id}});return reply({success:true});}catch(e){return reply({error:e.message||'Update failed.'},400);}});
