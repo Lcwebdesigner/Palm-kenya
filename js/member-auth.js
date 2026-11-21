@@ -1,2 +1,23 @@
-document.getElementById('memberLoginForm').addEventListener('submit', async (e) => { e.preventDefault(); const f=e.currentTarget, m=document.getElementById('loginMessage'); m.textContent='Signing in…'; m.className='form-message'; try { const c=requirePalmClient(); const n=f.membership_number.value.trim().toUpperCase(); const {data,error}=await c.auth.signInWithPassword({email:memberAuthEmail(n),password:f.password.value}); if(error) throw error; const {data:profile,error:pErr}=await c.from('members').select('status').eq('id',data.user.id).single(); if(pErr || profile.status!=='active') { await c.auth.signOut(); throw new Error('This membership is not active. Contact the foundation.'); } location.href='dashboard.html'; } catch(err){m.textContent=err.message||'Login failed.';m.classList.add('error');} });
-document.getElementById('activationForm').addEventListener('submit', async (e)=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('activationMessage');m.textContent='Activating account…';m.className='form-message';if(f.new_password.value!==f.confirm_password.value){m.textContent='Passwords do not match.';m.classList.add('error');return;}try{const c=requirePalmClient();const {data,error}=await c.functions.invoke('activate-member',{body:{membership_number:f.membership_number.value.trim().toUpperCase(),activation_code:f.activation_code.value.trim(),new_password:f.new_password.value}});if(error)throw error;const {error:loginError}=await c.auth.signInWithPassword({email:data.email,password:f.new_password.value});if(loginError)throw loginError;location.href='dashboard.html';}catch(err){m.textContent=err.message||'Activation failed. Check your details or contact the administrator.';m.classList.add('error');}});
+document.getElementById('memberLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.currentTarget, m = document.getElementById('loginMessage'), b = f.querySelector('[type=submit]');
+  const say = (t, err) => { m.textContent = t; m.className = 'form-message' + (err ? ' error' : ''); };
+  say('Signing in…'); b.disabled = true;
+  try {
+    const c = requirePalmClient();
+    const { data, error } = await c.auth.signInWithPassword({ email: memberAuthEmail(f.identifier.value), password: f.password.value });
+    if (error) throw new Error(/banned/i.test(error.message) ? 'This membership has been suspended. Please contact the foundation.' : 'Incorrect phone number/membership number or password.');
+    const { data: member } = await c.from('members').select('status').eq('id', data.user.id).maybeSingle();
+    if (member && member.status === 'active') { location.href = 'dashboard.html'; return; }
+    let text = 'This membership is not active. Please contact the foundation.';
+    if (member && member.status === 'suspended') text = 'This membership has been suspended. Please contact the foundation.';
+    else if (!member) {
+      const { data: app } = await c.from('applications').select('status,rejection_reason').eq('user_id', data.user.id).maybeSingle();
+      if (app && app.status === 'pending') text = 'Your application is still awaiting approval. You will be able to log in as soon as the foundation approves it.';
+      else if (app && app.status === 'rejected') text = 'Your application was not approved.' + (app.rejection_reason ? ' Reason: ' + app.rejection_reason : '') + ' Please contact the foundation.';
+    }
+    await c.auth.signOut();
+    say(text, true);
+  } catch (err) { say(err.message || 'Login failed.', true); }
+  finally { b.disabled = false; }
+});

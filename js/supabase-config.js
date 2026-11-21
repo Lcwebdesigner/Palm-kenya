@@ -9,5 +9,6 @@
     if (!window.__palmSupabase) window.__palmSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return window.__palmSupabase;
   };
-  window.memberAuthEmail = n => `${String(n).toLowerCase()}@members.palmfoundation.internal`;
+  window.normalizeKenyanPhone = v => { const d = String(v || '').replace(/[^0-9+]/g, ''); if (/^\+254[17][0-9]{8}$/.test(d)) return d; if (/^254[17][0-9]{8}$/.test(d)) return '+' + d; if (/^0[17][0-9]{8}$/.test(d)) return '+254' + d.slice(1); return null; };
+  window.memberAuthEmail = id => { const v = String(id).trim(); if (/^palm-/i.test(v)) return `${v.toLowerCase()}@members.palmfoundation.internal`; const p = window.normalizeKenyanPhone(v); if (!p) throw new Error('Enter a valid phone number (e.g. 0712345678) or your membership number.'); return `${p.slice(1)}@members.palmfoundation.internal`; };
 })();
