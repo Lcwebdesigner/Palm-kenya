@@ -1,4 +1,11 @@
 const form = document.getElementById('applicationForm');
+// Safety net: if an older register.html is still deployed, add the password fields so registration still works.
+if (form && !form.elements.password) {
+  const idLabel = form.elements.id_document.closest('label');
+  const wrap = document.createElement('div');
+  wrap.innerHTML = '<label>Create password *<input name="password" type="password" autocomplete="new-password" required minlength="10" maxlength="72"><span class="help">At least 10 characters. You will use this with your phone number to log in after approval.</span></label><label>Confirm password *<input name="confirm_password" type="password" autocomplete="new-password" required minlength="10" maxlength="72"></label>';
+  while (wrap.firstChild) idLabel.parentNode.insertBefore(wrap.firstChild, idLabel);
+}
 form?.addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('formMessage'), btn = form.querySelector('[type=submit]');

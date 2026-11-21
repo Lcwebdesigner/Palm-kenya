@@ -1,11 +1,11 @@
-document.getElementById('memberLoginForm').addEventListener('submit', async (e) => {
+document.getElementById('memberLoginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.currentTarget, m = document.getElementById('loginMessage'), b = f.querySelector('[type=submit]');
   const say = (t, err) => { m.textContent = t; m.className = 'form-message' + (err ? ' error' : ''); };
   say('Signing in…'); b.disabled = true;
   try {
     const c = requirePalmClient();
-    const { data, error } = await c.auth.signInWithPassword({ email: memberAuthEmail(f.identifier.value), password: f.password.value });
+    const { data, error } = await c.auth.signInWithPassword({ email: memberAuthEmail((f.identifier||f.membership_number).value), password: f.password.value });
     if (error) throw new Error(/banned/i.test(error.message) ? 'This membership has been suspended. Please contact the foundation.' : 'Incorrect phone number/membership number or password.');
     const { data: member } = await c.from('members').select('status').eq('id', data.user.id).maybeSingle();
     if (member && member.status === 'active') { location.href = 'dashboard.html'; return; }
